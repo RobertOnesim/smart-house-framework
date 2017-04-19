@@ -1,7 +1,10 @@
 package com.ronesim.smarthouse;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import com.ronesim.smarthouse.account.LoginActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -9,5 +12,9 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Login system
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 }
