@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#4286f4</color>
-    <color name="primary_dark">#2b75ed</color>
-    <color name="primary_darker">#145fd9</color>
-    <color name="accent">#FFFFFF</color>
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#3949AB</color>
+    <color name="accent">#00B0FF</color>
+
+    <color name="primary_login">#4286f4</color>
+    <color name="primary_dark_login">#2b75ed</color>
+    <color name="primary_darker_login">#145fd9</color>
+    <color name="accent_login">#FFFFFF</color>
+
 
     <color name="black">#000000</color>
     <color name="jet">#222222</color>

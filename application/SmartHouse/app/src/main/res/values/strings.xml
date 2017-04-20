@@ -8,4 +8,5 @@
     <string name="email_confirm">Confirm Email</string>
     <string name="create_account">Create Account</string>
     <string name="info">Already a member? Login</string>
+    <string name="action_settings">Settings</string>
 </resources>
