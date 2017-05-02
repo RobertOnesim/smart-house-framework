@@ -1,12 +1,12 @@
-package com.ronesim.smarthouse.home;
+package com.ronesim.smarthouse.home.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ronesim.smarthouse.R;
+import com.ronesim.smarthouse.model.Room;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +19,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RoomHolder> {
 
     private List<Room> roomsList = Collections.emptyList();
 
-    public RecyclerViewAdapter(List<Room> roomsList, Context context) {
+    public RecyclerViewAdapter(List<Room> roomsList) {
         this.roomsList = roomsList;
     }
 
@@ -36,9 +36,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RoomHolder> {
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         roomHolder.setImageView(roomsList.get(position).getImageId());
         roomHolder.setTitle(roomsList.get(position).getName());
-        roomHolder.setDate(roomsList.get(position).getDate());
+        roomHolder.setDate(roomsList.get(position).getDateUpdate());
         roomHolder.setDescription(roomsList.get(position).getInfo());
-        roomHolder.setNumberOfDevices(roomsList.get(position).getNumber_of_devices());
+        roomHolder.setNumberOfDevices(roomsList.get(position).getNumberOfDevices());
     }
 
     @Override
@@ -58,11 +58,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RoomHolder> {
         notifyItemInserted(position);
     }
 
-    // Remove a RecyclerView item containing a specified Data object
-    public void remove(Room room) {
-        int position = roomsList.indexOf(room);
+    // Remove a RecyclerView item
+    public void remove(int position) {
         roomsList.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public Room getRoom(int position) {
+        return roomsList.get(position);
     }
 
 }

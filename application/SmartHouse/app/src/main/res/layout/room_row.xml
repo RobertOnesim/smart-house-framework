@@ -32,13 +32,13 @@
             android:textSize="30sp" />
 
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/dateUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/imageView"
-            android:text="date" />
+            android:text="dateUpdate" />
 
         <TextView
             android:id="@+id/description"
