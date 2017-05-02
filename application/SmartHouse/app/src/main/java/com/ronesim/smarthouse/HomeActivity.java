@@ -1,13 +1,234 @@
 package com.ronesim.smarthouse;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.ronesim.smarthouse.account.LoginActivity;
+import com.ronesim.smarthouse.home.adapter.RecyclerViewAdapter;
+import com.ronesim.smarthouse.home.adapter.util.ClickListener;
+import com.ronesim.smarthouse.home.adapter.util.RecyclerTouchListener;
+import com.ronesim.smarthouse.model.Room;
+import com.ronesim.smarthouse.remote.APIService;
+import com.ronesim.smarthouse.remote.APIUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
+    private APIService apiService = APIUtils.getAPIService();
+    private DrawerLayout drawerLayout;
+    private RecyclerViewAdapter adapter;
+    private List<Room> roomList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // Login system
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+
+        // Adding Toolbar to Main screen
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Create Navigation drawer and inflate layout
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+
+        // Adding menu icon to Toolbar
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white);
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        // Set behavior of navigation drawer
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    // This method will trigger on item Click of navigation menu
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                        // Set item in checked state
+                        menuItem.setChecked(true);
+                        // TODO ronesim: handle navigation
+                        // Closing drawer on item click
+                        drawerLayout.closeDrawers();
+                        return true;
+                    }
+                });
+
+        // Adding Floating Action Button to bottom right of main view
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View dialogView = LayoutInflater.from(v.getContext()).inflate(R.layout.add_room_dialog, null);
+                final AlertDialog alertDialog = new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("Add Room")
+                        .setView(dialogView)
+                        .setPositiveButton("Add", null)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .create();
+
+                final EditText inputRoomName = (EditText) dialogView.findViewById(R.id.roomName);
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // validate name
+                                String roomName = inputRoomName.getText().toString();
+                                if (roomName.isEmpty()) {
+                                    inputRoomName.setError("Room name cannot be empty.");
+                                } else {
+                                    apiService.addRoom(roomName).enqueue(new Callback<Room>() {
+                                        @Override
+                                        public void onResponse(Call<Room> call, Response<Room> response) {
+                                            adapter.insert(0, response.body());
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Room> call, Throwable t) {
+                                            Log.e("Failed", t.getMessage());
+                                            Toast.makeText(getBaseContext(), "Failed to add a new room.", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    alertDialog.dismiss();
+                                }
+                            }
+                        });
+                    }
+                });
+                alertDialog.show();
+            }
+        });
+
+        // DATA - room list
+        apiService.roomList().enqueue(new Callback<List<Room>>() {
+            @Override
+            public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
+                roomList = response.body();
+                setHomePage();
+            }
+
+            @Override
+            public void onFailure(Call<List<Room>> call, Throwable t) {
+                Log.e("Failed", t.getMessage());
+                Toast.makeText(getBaseContext(), "Failed to get data from server.", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        // HAndle item selection
+        switch (menuItem.getItemId()) {
+            case R.id.action_settings:
+                System.out.println("Hit Settings");
+                return true;
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
+
+    private void setHomePage() {
+        // Recycler View used to list all the rooms
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(HomeActivity.this, recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                // TODO ronesim implement onClick method
+                Toast.makeText(HomeActivity.this, "On Click" + position, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(View view, final int position) {
+                AlertDialog dialog = new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("Remove room")
+                        .setMessage("Would you like to delete this room?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Room room = adapter.getRoom(position);
+                                apiService.deleteRoom(room.getId()).enqueue(new Callback<Room>() {
+                                    @Override
+                                    public void onResponse(Call<Room> call, Response<Room> response) {
+                                        if (response.code() == 204) { // room deleted - status code returned 204
+                                            adapter.remove(position);
+                                        } else {
+                                            Toast.makeText(HomeActivity.this, "Room id not found.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Room> call, Throwable t) {
+                                        Toast.makeText(HomeActivity.this, "Failed to remove the room.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .create();
+                dialog.show();
+            }
+        }));
+
+        // Adapter
+        adapter = new RecyclerViewAdapter(roomList);
+        recyclerView.setAdapter(adapter);
+
+        // Animate the Recycler View
+        RecyclerView.ItemAnimator itemAnimator = new DefaultItemAnimator();
+        itemAnimator.setAddDuration(1000);
+        itemAnimator.setRemoveDuration(600);
+        recyclerView.setItemAnimator(itemAnimator);
+    }
+
 }
