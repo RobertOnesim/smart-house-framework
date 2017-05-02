@@ -13,23 +13,35 @@ User = get_user_model()
 
 
 class UserCreateSerializer(ModelSerializer):
+    email = EmailField(label="Email Address")
+    email2 = EmailField(label="Confirm Email")
+
     class Meta:
         model = User
         fields = ['username',
                   'email',
+                  'email2',
                   'password'
                   ]
-        extra_kwargs = {"password":
-                            {"write_only": True}
+        extra_kwargs = {"password": {"write_only": True}
                         }
 
     def validate(self, data):
+        return data
+
+    def validate_email2(self, value):
+        # check emails match
+        data = self.get_initial()
+        email1 = data.get("email")
+        email2 = value
+        if email1 != email2:
+            raise ValidationError("Emails must match.")
+
         # check email exists
-        email = data['email']
-        user_qs = User.objects.filter(email=email)
+        user_qs = User.objects.filter(email=email1)
         if user_qs.exists():
             raise ValidationError("This user has already been registered")
-        return data
+        return value
 
     def create(self, validated_data):
         username = validated_data['username']
@@ -56,8 +68,7 @@ class UserLoginSerializer(ModelSerializer):
                   'password',
                   'token'
                   ]
-        extra_kwargs = {"password":
-                            {"write_only": True}
+        extra_kwargs = {"password": {"write_only": True}
                         }
 
     def validate(self, data):
@@ -71,7 +82,7 @@ class UserLoginSerializer(ModelSerializer):
             Q(email=email) |
             Q(username=username)
         ).distinct()
-        user = user.exclude(email_isnull=True).exclude(email_iexact='')
+        user = user.exclude(email__isnull=True).exclude(email__iexact='')
         if user.exists() and user.count() == 1:
             user_obj = user.first()
         else:
