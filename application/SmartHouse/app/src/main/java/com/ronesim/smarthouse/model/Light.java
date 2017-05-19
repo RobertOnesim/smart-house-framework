@@ -31,6 +31,10 @@ public class Light {
     @Expose
     private double intensity;
 
+    public Light(String name) {
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }

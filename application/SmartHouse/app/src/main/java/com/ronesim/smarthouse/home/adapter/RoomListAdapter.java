@@ -15,11 +15,11 @@ import java.util.List;
  * Created by ronesim on 21.04.2017.
  */
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RoomHolder> {
+public class RoomListAdapter extends RecyclerView.Adapter<RoomHolder> {
 
     private List<Room> roomsList = Collections.emptyList();
 
-    public RecyclerViewAdapter(List<Room> roomsList) {
+    public RoomListAdapter(List<Room> roomsList) {
         this.roomsList = roomsList;
     }
 

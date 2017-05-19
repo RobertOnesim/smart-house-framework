@@ -2,6 +2,7 @@ package com.ronesim.smarthouse;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -25,10 +26,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ronesim.smarthouse.account.LoginActivity;
-import com.ronesim.smarthouse.home.adapter.RecyclerViewAdapter;
+import com.ronesim.smarthouse.home.adapter.RoomListAdapter;
 import com.ronesim.smarthouse.home.adapter.util.ClickListener;
 import com.ronesim.smarthouse.home.adapter.util.RecyclerTouchListener;
+import com.ronesim.smarthouse.home.room.RoomActivity;
 import com.ronesim.smarthouse.model.Room;
 import com.ronesim.smarthouse.remote.APIService;
 import com.ronesim.smarthouse.remote.APIUtils;
@@ -43,7 +44,7 @@ import retrofit2.Response;
 public class HomeActivity extends AppCompatActivity {
     private APIService apiService = APIUtils.getAPIService();
     private DrawerLayout drawerLayout;
-    private RecyclerViewAdapter adapter;
+    private RoomListAdapter adapter;
     private List<Room> roomList = new ArrayList<>();
 
     @Override
@@ -52,9 +53,13 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // Login system
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, LoginActivity.class);
+        //startActivity(intent);
 
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, "BLE NOT SUPPORTED", Toast.LENGTH_LONG).show();
+        }
+        // TODO ronesim start this only if login was accepted
         // Adding Toolbar to Main screen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -178,8 +183,9 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(HomeActivity.this, recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                // TODO ronesim implement onClick method
-                Toast.makeText(HomeActivity.this, "On Click" + position, Toast.LENGTH_SHORT).show();
+                // TODO ronesim send info about that room
+                Intent intent = new Intent(view.getContext(), RoomActivity.class);
+                startActivity(intent);
             }
 
             @Override
@@ -221,7 +227,7 @@ public class HomeActivity extends AppCompatActivity {
         }));
 
         // Adapter
-        adapter = new RecyclerViewAdapter(roomList);
+        adapter = new RoomListAdapter(roomList);
         recyclerView.setAdapter(adapter);
 
         // Animate the Recycler View
