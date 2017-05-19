@@ -11,11 +11,11 @@ class RoomList(APIView):
     """
     List all rooms, or create a new room.
     """
+    serializer_class = RoomSerializer
 
     def get(self, request):
         rooms = Room.objects.all()
         serializer = RoomSerializer(rooms, many=True)
-        print(serializer)
         return Response(serializer.data)
 
     def post(self, request):

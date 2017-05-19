@@ -1,18 +1,7 @@
 from rest_framework import serializers
 
-from .models import Room, Device, Light
-
-
-class DeviceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Device
-        fields = ('id', 'room', 'name', 'mac_address', 'is_on')
-
-
-class LightSerializer(DeviceSerializer):
-    class Meta(DeviceSerializer.Meta):
-        model = Light
-        fields = DeviceSerializer.Meta.fields + ('color', 'intensity',)
+from .devices import LightSerializer
+from .models import Room
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -20,4 +9,4 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Room
-        fields = ('id', 'name', 'number_of_devices', 'lights')
+        fields = ('id', 'name', 'number_of_devices', 'info', 'date_update', 'lights')
