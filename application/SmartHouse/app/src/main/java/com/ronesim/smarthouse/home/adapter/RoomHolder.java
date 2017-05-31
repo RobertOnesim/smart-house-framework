@@ -55,7 +55,8 @@ class RoomHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     }
 
     void setDescription(String description) {
-        this.description.setText(description);
+        String text = "Last update: " + description;
+        this.description.setText(text);
     }
 
     public void setTitle(String title) {

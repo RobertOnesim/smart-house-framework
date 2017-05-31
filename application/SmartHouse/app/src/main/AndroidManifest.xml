@@ -3,10 +3,15 @@
     package="com.ronesim.smarthouse">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -23,6 +28,7 @@
         <activity
             android:name=".account.SignUpActivity"
             android:theme="@style/AppTheme.Login" />
+        <activity android:name=".home.room.RoomActivity" />
     </application>
 
 </manifest>

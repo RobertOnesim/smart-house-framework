@@ -17,7 +17,7 @@ public class Room {
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("numberOfDevices")
+    @SerializedName("number_of_devices")
     @Expose
     private int numberOfDevices;
     @SerializedName("info")
