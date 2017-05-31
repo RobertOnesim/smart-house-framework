@@ -19,3 +19,23 @@ class Device(models.Model):
 class Light(Device):
     color = models.CharField(max_length=15)
     intensity = models.FloatField(default=1.0)
+
+
+class Plug(Device):
+    away_mode = models.BooleanField(default=False)
+    schedule = models.CharField(max_length=1000)
+
+
+class Lock(Device):
+    pin_code = models.IntegerField(default=1234)
+    voice_activation = models.BooleanField(default=False)
+
+
+class Thermostat(Device):
+    temperature = models.IntegerField()
+    humidity = models.IntegerField()
+
+
+class Webcam(Device):
+    night_vision = models.BooleanField(default=False)
+    motion_detection = models.BooleanField(default=True)

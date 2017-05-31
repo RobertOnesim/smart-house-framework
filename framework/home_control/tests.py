@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import Room, Light
+from .models import Room, Light, Thermostat
 
 
 class UserLoginAPIViewTests(APITestCase):
@@ -56,7 +56,8 @@ class DeviceTests(APITestCase):
         room.save()
         # add a new device (light)
         url = reverse('add_device')
-        data = {'type': 'light',
+        data = {'device_type': 'Light',
+                # 'product_name': 'MagicBlue'
                 'info': {
                     'room': 1,
                     'name': 'MagicBlue',
@@ -69,3 +70,47 @@ class DeviceTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Light.objects.count(), 1)
+
+        # test thermostats
+        data = {'device_type': 'Thermostat',
+                'info': {
+                    'room': 1,
+                    'name': 'Ness',
+                    'mac_address': 'f8:1d:78:60:2a:5a',
+                    'is_on': True,
+                    'temperature': 22,
+                    'humidity': 22,
+                }
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Thermostat.objects.count(), 1)
+
+    def test_remove_device(self):
+        self.assertTrue(self.logged_in)
+        # add a new room
+        room = Room(name='LivingRoom', number_of_devices=1)
+        room.save()
+        # add a new device (light)
+        url = reverse('add_device')
+        data = {'device_type': 'Light',
+                # 'product_name': 'MagicBlue'
+                'info': {
+                    'room': 1,
+                    'name': 'MagicBlue',
+                    'mac_address': 'f8:1d:78:60:2a:5a',
+                    'is_on': True,
+                    'color': "123 213 121",
+                    'intensity': 0.5
+                }
+                }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Light.objects.count(), 1)
+
+        # remove device
+        url = reverse('remove_device', kwargs={'device_type': 'Light',
+                                               'device_id': 1})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Light.objects.count(), 0)
