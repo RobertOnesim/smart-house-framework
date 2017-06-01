@@ -1,4 +1,4 @@
-from home_automation.devices.security import Lock
+from home_automation.devices.security.lock import Lock
 
 
 class FakeLock(Lock):

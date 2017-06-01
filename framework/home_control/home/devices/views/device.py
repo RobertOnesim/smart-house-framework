@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from home_control.home.devices.serializers import ProductSerializer, DeviceSerializer
 from home_control.models import (
+    Room,
     Product,
     Light,
     Plug,
@@ -47,6 +48,11 @@ class DeviceManager(APIView):
 
     def post(self, request):
         serializer = DeviceSerializer.get_device_instance(request.data['device_type'], request.data['info'])
+        # increment number of devices in the room
+        room = Room.objects.get(pk=request.data['info']['room'])
+        room.number_of_devices += 1
+        room.save()
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -54,5 +60,10 @@ class DeviceManager(APIView):
 
     def delete(self, request, device_type, device_id):
         device = self.get_object(device_type, device_id)
+        # decrement number of devices from that room
+        room = device.room
+        room.number_of_devices -= 1
+        room.save()
+        # delete the device
         device.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
