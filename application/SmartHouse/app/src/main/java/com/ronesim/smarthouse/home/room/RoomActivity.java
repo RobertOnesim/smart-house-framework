@@ -4,22 +4,31 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.ronesim.smarthouse.R;
 import com.ronesim.smarthouse.home.adapter.DeviceListAdapter;
-import com.ronesim.smarthouse.model.Light;
 import com.ronesim.smarthouse.model.Product;
+import com.ronesim.smarthouse.model.Room;
+import com.ronesim.smarthouse.remote.APIService;
+import com.ronesim.smarthouse.remote.APIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RoomActivity extends AppCompatActivity {
-
     @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
+    private APIService apiService = APIUtils.getAPIService();
+    private List<Product> products = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,21 +36,28 @@ public class RoomActivity extends AppCompatActivity {
         setContentView(R.layout.activity_room);
         ButterKnife.bind(this);
 
+        // get room info
+        Gson gson = new Gson();
+        String strRoom = getIntent().getStringExtra("room");
+        final Room room = gson.fromJson(strRoom, Room.class);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Adapter
-        List<Product> products = new ArrayList<>();
-        Product product = new Product(1, "Light", "MagicBlue", "bluetooth");
-        Product product1 = new Product(1, "Light", "Hue", "wifi");
-        Product product2 = new Product(1, "Plug", "TP-Link", "wifi");
-        products.add(product);
-        products.add(product1);
-        products.add(product2);
-        List<Light> deviceList = new ArrayList<>();
-        Light light = new Light("Magic Blue");
-        deviceList.add(light);
-        DeviceListAdapter adapter = new DeviceListAdapter(deviceList, products);
-        recyclerView.setAdapter(adapter);
+        apiService.productList().enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                products = response.body();
+                // set adapter
+                DeviceListAdapter adapter = new DeviceListAdapter(room.getDevices(), products);
+                recyclerView.setAdapter(adapter);
+            }
 
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                Log.e("Failed", t.getMessage());
+                Toast.makeText(getBaseContext(), "Failed to get products from server.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

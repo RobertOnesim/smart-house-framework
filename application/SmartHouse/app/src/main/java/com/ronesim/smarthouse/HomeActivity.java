@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.ronesim.smarthouse.home.adapter.RoomListAdapter;
 import com.ronesim.smarthouse.home.adapter.util.ClickListener;
 import com.ronesim.smarthouse.home.adapter.util.RecyclerTouchListener;
@@ -183,8 +184,9 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(HomeActivity.this, recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                // TODO ronesim send info about that room
                 Intent intent = new Intent(view.getContext(), RoomActivity.class);
+                Gson gson = new Gson();
+                intent.putExtra("room", gson.toJson(roomList.get(position)));
                 startActivity(intent);
             }
 

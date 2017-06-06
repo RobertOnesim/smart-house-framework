@@ -2,7 +2,14 @@ package com.ronesim.smarthouse.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.ronesim.smarthouse.model.devices.Device;
+import com.ronesim.smarthouse.model.devices.Light;
+import com.ronesim.smarthouse.model.devices.Lock;
+import com.ronesim.smarthouse.model.devices.Plug;
+import com.ronesim.smarthouse.model.devices.Thermostat;
+import com.ronesim.smarthouse.model.devices.Webcam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +36,19 @@ public class Room {
     @SerializedName("lights")
     @Expose
     private List<Light> lights = null;
+    @SerializedName("locks")
+    @Expose
+    private List<Lock> locks = null;
+    @SerializedName("plugs")
+    @Expose
+    private List<Plug> plugs = null;
+    @SerializedName("thermostats")
+    @Expose
+    private List<Thermostat> thermostats = null;
+    @SerializedName("webcams")
+    @Expose
+    private List<Webcam> webcams = null;
+
     private int imageId;
 
 
@@ -89,15 +109,75 @@ public class Room {
         this.id = id;
     }
 
+    public List<Light> getLights() {
+        return lights;
+    }
+
+    public void setLights(List<Light> lights) {
+        this.lights = lights;
+    }
+
+    public List<Lock> getLocks() {
+        return locks;
+    }
+
+    public void setLocks(List<Lock> locks) {
+        this.locks = locks;
+    }
+
+    public List<Plug> getPlugs() {
+        return plugs;
+    }
+
+    public void setPlugs(List<Plug> plugs) {
+        this.plugs = plugs;
+    }
+
+    public List<Thermostat> getThermostats() {
+        return thermostats;
+    }
+
+    public void setThermostats(List<Thermostat> thermostats) {
+        this.thermostats = thermostats;
+    }
+
+    public List<Webcam> getWebcams() {
+        return webcams;
+    }
+
+    public void setWebcams(List<Webcam> webcams) {
+        this.webcams = webcams;
+    }
+
+    /**
+     * Put (lights, plugs, webcams, thermostats, locks) all together
+     *
+     * @return a list of all devices
+     */
+    public List<Device> getDevices() {
+        List<Device> devices = new ArrayList<>();
+        devices.addAll(lights);
+        devices.addAll(plugs);
+        devices.addAll(thermostats);
+        devices.addAll(webcams);
+        devices.addAll(locks);
+        return devices;
+    }
+
     @Override
     public String toString() {
         return "Room{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", numberOfDevices=" + numberOfDevices +
                 ", info='" + info + '\'' +
                 ", dateUpdate='" + dateUpdate + '\'' +
+                ", lights=" + lights +
+                ", locks=" + locks +
+                ", plugs=" + plugs +
+                ", thermostats=" + thermostats +
+                ", webcams=" + webcams +
                 ", imageId=" + imageId +
-                ", numberOfDevices=" + numberOfDevices +
                 '}';
     }
 }

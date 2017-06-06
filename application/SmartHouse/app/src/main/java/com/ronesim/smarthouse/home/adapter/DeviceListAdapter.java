@@ -29,13 +29,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.ronesim.smarthouse.R;
-import com.ronesim.smarthouse.model.Light;
 import com.ronesim.smarthouse.model.Product;
+import com.ronesim.smarthouse.model.devices.Device;
+import com.ronesim.smarthouse.model.devices.DeviceDisplayVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by ronesim on 07.05.2017.
@@ -45,10 +47,10 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
 
     private static final long SCAN_PERIOD = 3000;
     // progress dialog used for BLE scan
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
     private AppCompatSpinner productTypeSpinner;
     private AppCompatSpinner productNameSpinner;
-    private List<Light> devicesList = Collections.emptyList();
+    private List<Device> devicesList = Collections.emptyList();
     private List<Product> products;
     // used for bluetooth scan BLE devices
     private BluetoothAdapter bluetoothAdapter;
@@ -58,7 +60,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
     private List<BluetoothDevice> devices;
     private ScanSettings settings;
 
-    public DeviceListAdapter(List<Light> devicesList, List<Product> products) {
+    public DeviceListAdapter(List<Device> devicesList, List<Product> products) {
         this.devicesList = devicesList;
         this.products = products;
     }
@@ -87,8 +89,8 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
             });
         } else {
             holder.setName(devicesList.get(position).getName());
-            holder.deviceLogo.setImageResource(R.drawable.logo_light);
-            holder.turnOnOff.setChecked(true);
+            holder.deviceLogo.setImageResource(devicesList.get(position).accept(new DeviceDisplayVisitor()));
+            holder.turnOnOff.setChecked(devicesList.get(position).isOn());
             holder.turnOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -123,7 +125,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
         // create first spinner
         productTypeSpinner = (AppCompatSpinner) dialogView.findViewById(R.id.productType);
         productNameSpinner = (AppCompatSpinner) dialogView.findViewById(R.id.productName);
-        ArrayAdapter productsTypeAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, getProductsType());
+        ArrayAdapter productsTypeAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, getProductsType());
         productTypeSpinner.setAdapter(productsTypeAdapter);
 
         productTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -226,9 +228,18 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
 
     private List<String> getProductsName(String type) {
         List<String> ans = new ArrayList<>();
-        for (Product product : products)
-            if (product.getType() == type)
-                ans.add(product.getName());
+        for (Product product : products) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if (Objects.equals(product.getType(), type)) {
+                    ans.add(product.getName());
+                }
+            } else {
+                if (product.getType() == type) {
+                    ans.add(product.getName());
+
+                }
+            }
+        }
         return ans;
     }
 

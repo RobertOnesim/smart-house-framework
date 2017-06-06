@@ -1,14 +1,13 @@
-package com.ronesim.smarthouse.model;
+package com.ronesim.smarthouse.model.devices;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by ronesim on 03.05.2017.
+ * Created by ronesim on 06.06.2017.
  */
-// TODO ronesim add abstract class
-public class Light {
 
+public abstract class Device {
     @SerializedName("id")
     @Expose
     private int id;
@@ -24,16 +23,8 @@ public class Light {
     @SerializedName("is_on")
     @Expose
     private boolean isOn;
-    @SerializedName("color")
-    @Expose
-    private String color;
-    @SerializedName("intensity")
-    @Expose
-    private double intensity;
 
-    public Light(String name) {
-        this.name = name;
-    }
+    public abstract int accept(DeviceVisitor deviceVisitor);
 
     public int getId() {
         return id;
@@ -67,27 +58,22 @@ public class Light {
         this.macAddress = macAddress;
     }
 
-    public boolean isIsOn() {
+    public boolean isOn() {
         return isOn;
     }
 
-    public void setIsOn(boolean isOn) {
-        this.isOn = isOn;
+    public void setOn(boolean on) {
+        isOn = on;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public double getIntensity() {
-        return intensity;
-    }
-
-    public void setIntensity(double intensity) {
-        this.intensity = intensity;
+    @Override
+    public String toString() {
+        return "Device{" +
+                "id=" + id +
+                ", room=" + room +
+                ", name='" + name + '\'' +
+                ", macAddress='" + macAddress + '\'' +
+                ", isOn=" + isOn +
+                '}';
     }
 }

@@ -4,6 +4,7 @@ package com.ronesim.smarthouse.remote;
  * Created by ronesim on 13.04.2017.
  */
 
+import com.ronesim.smarthouse.model.Product;
 import com.ronesim.smarthouse.model.Room;
 import com.ronesim.smarthouse.model.User;
 
@@ -20,6 +21,7 @@ import retrofit2.http.Path;
 
 public interface APIService {
 
+    // Login and Register system
     @POST("/api/register/")
     @FormUrlEncoded
     Call<User> registerUser(@Field("username") String username,
@@ -32,6 +34,7 @@ public interface APIService {
     Call<User> loginUser(@Field("username") String username,
                          @Field("password") String password);
 
+    // Room management
     @GET("/home")
     Call<List<Room>> roomList();
 
@@ -42,5 +45,8 @@ public interface APIService {
     @DELETE("/home/room/manage/{room_id}/")
     Call<Room> deleteRoom(@Path("room_id") int roomId);
 
+    // device management
+    @GET("/home/device/manage")
+    Call<List<Product>> productList();
 
 }
