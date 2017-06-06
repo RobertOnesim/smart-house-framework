@@ -3,8 +3,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from home_control.home.room.serializers import RoomSerializer
 from home_control.models import Room
-from home_control.serializers import RoomSerializer
 
 
 class RoomList(APIView):
