@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -38,19 +39,27 @@ class LightManager(DeviceBaseManager):
         action_type = request.data['action']
 
         # check action type
+        changed = False
         if light.connect():
             if action_type == 'state':
                 # change light state (on/off)
+                db_light.room.info = "Light (" + db_light.name + ") state was changed."
                 self.change_state(db_light, light, request.data['state'])
-                return Response(status=status.HTTP_200_OK)
-            if action_type == 'color':
+                changed = True
+            elif action_type == 'color':
                 # change light color
+                db_light.room.info = "Light (" + db_light.name + ") color was changed."
                 self.change_color(db_light, light, request.data['color'])
-                return Response(status=status.HTTP_200_OK)
-            if action_type == 'intensity':
+                changed = True
+            elif action_type == 'intensity':
                 # change light intensity
+                db_light.room.info = "Light (" + db_light.name + ") intensity was changed."
                 self.change_intensity(db_light, light, request.data['intensity'])
-            return Response(status=status.HTTP_200_OK)
+                changed = True
+            if changed:
+                db_light.room.date_update = timezone.now()
+                db_light.room.save()
+                return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def change_color(self, db_light, light, color):

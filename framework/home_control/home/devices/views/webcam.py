@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -37,10 +38,15 @@ class WebcamManager(DeviceBaseManager):
         action_type = request.data['action']
 
         # check action type
+        changed = False
         if webcam.connect():
             if action_type == 'state':
                 # change state (on/off)
+                db_webcam.room.info = "Webcam (" + db_webcam.name + ") state was changed."
                 self.change_state(db_webcam, webcam, request.data['state'])
+                changed = True
+            if changed:
+                db_webcam.room.date_update = timezone.now()
+                db_webcam.room.save()
                 return Response(status=status.HTTP_200_OK)
-            return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)

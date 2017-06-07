@@ -52,4 +52,5 @@ class DeviceBaseManager(APIView):
             # turn off
             device.turn_off()
             db_device.is_on = False
+        device.disconnect()
         db_device.save()
