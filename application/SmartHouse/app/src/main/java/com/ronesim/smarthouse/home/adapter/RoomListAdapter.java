@@ -64,6 +64,10 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomHolder> {
         notifyItemRemoved(position);
     }
 
+    public void setRoomsList(List<Room> roomsList) {
+        this.roomsList = roomsList;
+    }
+
     public Room getRoom(int position) {
         return roomsList.get(position);
     }

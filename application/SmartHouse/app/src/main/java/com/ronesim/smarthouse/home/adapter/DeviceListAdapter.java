@@ -31,7 +31,7 @@ import android.widget.Toast;
 import com.ronesim.smarthouse.R;
 import com.ronesim.smarthouse.model.Product;
 import com.ronesim.smarthouse.model.devices.Device;
-import com.ronesim.smarthouse.model.devices.DeviceDisplayVisitor;
+import com.ronesim.smarthouse.model.devices.DeviceUpdateStateVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +79,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
     }
 
     @Override
-    public void onBindViewHolder(DeviceHolder holder, int position) {
+    public void onBindViewHolder(final DeviceHolder holder, final int position) {
         if (position == devicesList.size()) {
             holder.addDevice.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,16 +89,15 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
             });
         } else {
             holder.setName(devicesList.get(position).getName());
-            holder.deviceLogo.setImageResource(devicesList.get(position).accept(new DeviceDisplayVisitor()));
+            holder.deviceLogo.setImageResource(devicesList.get(position).getImageLogo());
             holder.turnOnOff.setChecked(devicesList.get(position).isOn());
             holder.turnOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                     if (isChecked)
-                        // TODO ronesim implement
-                        System.out.println("on");
+                        devicesList.get(position).accept(new DeviceUpdateStateVisitor("state", "on"));
                     else
-                        System.out.println("of");
+                        devicesList.get(position).accept(new DeviceUpdateStateVisitor("state", "off"));
                 }
             });
         }
@@ -118,6 +117,16 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
     @Override
     public int getItemViewType(int position) {
         return (position == devicesList.size()) ? R.layout.add_device_button : R.layout.device_row;
+    }
+
+    public Device getDevice(int position) {
+        return devicesList.get(position);
+    }
+
+    // Remove a RecyclerView item
+    public void remove(int position) {
+        devicesList.remove(position);
+        notifyItemRemoved(position);
     }
 
     private void addNewDevice(View view) {

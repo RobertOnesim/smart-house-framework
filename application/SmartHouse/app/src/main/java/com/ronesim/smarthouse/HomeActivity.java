@@ -187,7 +187,7 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(view.getContext(), RoomActivity.class);
                 Gson gson = new Gson();
                 intent.putExtra("room", gson.toJson(roomList.get(position)));
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
 
             @Override
@@ -239,4 +239,24 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(itemAnimator);
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                apiService.roomList().enqueue(new Callback<List<Room>>() {
+                    @Override
+                    public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
+                        roomList = response.body();
+                        adapter.setRoomsList(roomList);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Room>> call, Throwable t) {
+                        Log.e("Failed", t.getMessage());
+                        Toast.makeText(getBaseContext(), "Failed to get data from server.", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
+    }
 }

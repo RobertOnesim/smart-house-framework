@@ -24,7 +24,11 @@ public abstract class Device {
     @Expose
     private boolean isOn;
 
-    public abstract int accept(DeviceVisitor deviceVisitor);
+    public abstract void accept(DeviceVisitor deviceVisitor);
+
+    public abstract int getImageLogo();
+
+    public abstract String getType();
 
     public int getId() {
         return id;

@@ -78,10 +78,13 @@ public class Room {
     }
 
     public String getDateUpdate() {
-        return dateUpdate;
+        String date = dateUpdate.substring(0, 10);
+        String hour = dateUpdate.substring(11, 19);
+        return hour + " & " + date;
     }
 
     public void setDateUpdate(String dateUpdate) {
+
         this.dateUpdate = dateUpdate;
     }
 

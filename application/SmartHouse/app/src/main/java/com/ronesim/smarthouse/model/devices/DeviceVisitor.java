@@ -5,13 +5,13 @@ package com.ronesim.smarthouse.model.devices;
  */
 
 public interface DeviceVisitor {
-    int visit(Light light);
+    void visit(Light light);
 
-    int visit(Plug plug);
+    void visit(Plug plug);
 
-    int visit(Thermostat thermostat);
+    void visit(Thermostat thermostat);
 
-    int visit(Lock lock);
+    void visit(Lock lock);
 
-    int visit(Webcam webcam);
+    void visit(Webcam webcam);
 }
