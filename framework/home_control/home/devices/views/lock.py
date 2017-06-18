@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -37,15 +38,22 @@ class LockManager(DeviceBaseManager):
         action_type = request.data['action']
 
         # check action type
+        changed = False
         if lock.connect():
             if action_type == 'state':
                 # change state (on/off)
+                db_lock.room.info = "Lock (" + db_lock.name + ") state was changed."
                 self.change_state(db_lock, lock, request.data['state'])
-            if action_type == 'pin':
+                changed = True
+            elif action_type == 'pin':
                 # change lock pin code
+                db_lock.room.info = "Lock (" + db_lock.name + ") pin code was changed."
                 self.change_pin(db_lock, lock, request.data['pin'])
+                changed = True
+            if changed:
+                db_lock.room.date_update = timezone.now()
+                db_lock.room.save()
                 return Response(status=status.HTTP_200_OK)
-            return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def change_pin(self, db_lock, lock, pin_code):

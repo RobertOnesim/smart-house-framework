@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -48,9 +49,11 @@ class DeviceManager(APIView):
 
     def post(self, request):
         serializer = DeviceSerializer.get_device_instance(request.data['device_type'], request.data['info'])
-        # increment number of devices in the room
+        # increment number of devices in the room update time and last action
         room = Room.objects.get(pk=request.data['info']['room'])
         room.number_of_devices += 1
+        room.info = "Added a new device"
+        room.date_update = timezone.now()
         room.save()
 
         if serializer.is_valid():
@@ -63,6 +66,8 @@ class DeviceManager(APIView):
         # decrement number of devices from that room
         room = device.room
         room.number_of_devices -= 1
+        room.info = "Device was removed"
+        room.date_update = timezone.now()
         room.save()
         # delete the device
         device.delete()

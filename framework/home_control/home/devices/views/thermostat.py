@@ -1,4 +1,5 @@
 from django.http import Http404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -38,18 +39,27 @@ class ThermostatManager(DeviceBaseManager):
         action_type = request.data['action']
 
         # check action type
+        changed = False
         if thermostat.connect():
             if action_type == 'state':
                 # change state (on/off)
+                db_therm.room.info = "Thermostat (" + db_therm.name + ") state was changed."
                 self.change_state(db_therm, thermostat, request.data['state'])
-            if action_type == 'temperature':
+                changed = True
+            elif action_type == 'temperature':
                 # change thermostat temperature
+                db_therm.room.info = "Thermostat (" + db_therm.name + ") temperature was changed."
                 self.change_temperature(db_therm, thermostat, request.data['temperature'])
-                return Response(status=status.HTTP_200_OK)
-            if action_type == 'humidity':
+                changed = True
+            elif action_type == 'humidity':
                 # change thermostat humidity
+                db_therm.room.info = "Thermostat (" + db_therm.name + ") humidity was changed."
                 self.change_humidity(db_therm, thermostat, request.data['humidity'])
-            return Response(status=status.HTTP_200_OK)
+                changed = True
+            if changed:
+                db_therm.room.date_update = timezone.now()
+                db_therm.room.save()
+                return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def change_temperature(self, db_therm, thermostat, temperature):
