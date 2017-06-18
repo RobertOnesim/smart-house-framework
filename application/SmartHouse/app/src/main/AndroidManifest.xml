@@ -9,6 +9,7 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/logo"
@@ -29,6 +30,8 @@
             android:name=".account.SignUpActivity"
             android:theme="@style/AppTheme.Login" />
         <activity android:name=".home.room.RoomActivity" />
+        <activity android:name=".home.device.LightActivity" />
+        <activity android:name=".home.device.ThermostatActivity"></activity>
     </application>
 
 </manifest>

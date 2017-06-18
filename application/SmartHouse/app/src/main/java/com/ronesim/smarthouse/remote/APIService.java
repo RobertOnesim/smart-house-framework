@@ -7,6 +7,10 @@ package com.ronesim.smarthouse.remote;
 import com.ronesim.smarthouse.model.Product;
 import com.ronesim.smarthouse.model.Room;
 import com.ronesim.smarthouse.model.User;
+import com.ronesim.smarthouse.model.devices.Light;
+import com.ronesim.smarthouse.model.devices.Lock;
+import com.ronesim.smarthouse.model.devices.Thermostat;
+import com.ronesim.smarthouse.model.devices.Webcam;
 
 import java.util.List;
 
@@ -58,6 +62,9 @@ public interface APIService {
                                     @Path("device_id") int deviceId);
 
     // light
+    @GET("/home/device/light/{device_id}")
+    Call<Light> getLight(@Path("device_id") int deviceId);
+
     @POST("/home/device/light/{device_id}/")
     @FormUrlEncoded
     Call<ResponseBody> updateLight(@Path("device_id") int deviceId,
@@ -67,6 +74,9 @@ public interface APIService {
                                    @Field("intensity") Float intensity);
 
     // lock
+    @GET("/home/device/lock/{device_id}")
+    Call<Lock> getLock(@Path("device_id") int deviceId);
+
     @POST("/home/device/lock/{device_id}/")
     @FormUrlEncoded
     Call<ResponseBody> updateLock(@Path("device_id") int deviceId,
@@ -75,6 +85,9 @@ public interface APIService {
                                   @Field("pin_code") int pinCode);
 
     // thermostat
+    @GET("/home/device/thermostat/{device_id}")
+    Call<Thermostat> getThermostat(@Path("device_id") int deviceId);
+
     @POST("/home/device/thermostat/{device_id}/")
     @FormUrlEncoded
     Call<ResponseBody> updateThermostat(@Path("device_id") int deviceId,
@@ -85,6 +98,9 @@ public interface APIService {
 
 
     // webcam
+    @GET("/home/device/webcam/{device_id}")
+    Call<Webcam> getWebcam(@Path("device_id") int deviceId);
+
     @POST("/home/device/webcam/{device_id}/")
     @FormUrlEncoded
     Call<ResponseBody> updateWebcam(@Path("device_id") int deviceId,

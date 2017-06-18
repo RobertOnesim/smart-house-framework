@@ -17,6 +17,8 @@ import com.ronesim.smarthouse.R;
 import com.ronesim.smarthouse.home.adapter.DeviceListAdapter;
 import com.ronesim.smarthouse.home.adapter.util.ClickListener;
 import com.ronesim.smarthouse.home.adapter.util.RecyclerTouchListener;
+import com.ronesim.smarthouse.home.device.LightActivity;
+import com.ronesim.smarthouse.home.device.ThermostatActivity;
 import com.ronesim.smarthouse.model.Product;
 import com.ronesim.smarthouse.model.Room;
 import com.ronesim.smarthouse.model.devices.Device;
@@ -40,7 +42,6 @@ public class RoomActivity extends AppCompatActivity {
     private List<Product> products = new ArrayList<>();
 
     private DeviceListAdapter adapter;
-    private Room room;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +52,7 @@ public class RoomActivity extends AppCompatActivity {
         // get room info
         Gson gson = new Gson();
         String strRoom = getIntent().getStringExtra("room");
-        room = gson.fromJson(strRoom, Room.class);
+        Room room = gson.fromJson(strRoom, Room.class);
         final List<Device> deviceList = room.getDevices();
 
         // set the recycler view
@@ -59,7 +60,29 @@ public class RoomActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(RoomActivity.this, recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                // TODO ronesim implement this
+                Intent intent = new Intent();
+                switch (deviceList.get(position).getType()) {
+                    case "light":
+                        intent = new Intent(view.getContext(), LightActivity.class);
+                        break;
+                    case "plug":
+                        //intent = new Intent(view.getContext(), LightActivity.class);
+                        break;
+                    case "thermostat":
+                        intent = new Intent(view.getContext(), ThermostatActivity.class);
+                        break;
+                    case "lock":
+                        //intent = new Intent(view.getContext(), LightActivity.class);
+                        break;
+                    case "webcam":
+                        //intent = new Intent(view.getContext(), LightActivity.class);
+                        break;
+
+                }
+                Bundle bundle = new Bundle();
+                bundle.putInt("device_id", deviceList.get(position).getId());
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
 
             @Override

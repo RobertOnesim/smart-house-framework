@@ -1,0 +1,206 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        </android.support.design.widget.AppBarLayout>
+
+        <RelativeLayout
+            android:id="@+id/lightPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="56dp"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/deviceName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
+                android:gravity="center"
+                android:text="MAGIC BLUE"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/deviceAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/deviceName"
+                android:gravity="center"
+                android:text="mac address"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/setColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/deviceAddress"
+                android:text="Color details:"
+                android:textSize="20sp"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/setColor"
+                android:paddingTop="10dp"
+                android:text="Red"
+                android:textSize="16sp"
+                android:textStyle="normal|bold" />
+
+            <SeekBar
+                android:id="@+id/redNumber"
+                android:layout_width="458dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/red"
+                android:layout_centerHorizontal="true"
+                android:max="255" />
+
+            <TextView
+                android:id="@+id/redNumberView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/redNumber"
+                android:layout_toEndOf="@+id/redNumber"
+                android:layout_toRightOf="@+id/redNumber"
+                android:paddingLeft="5dp"
+                android:text="256"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/red"
+                android:paddingTop="10dp"
+                android:text="Green"
+                android:textSize="16sp"
+                android:textStyle="normal|bold" />
+
+            <SeekBar
+                android:id="@+id/greenNumber"
+                android:layout_width="458dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/green"
+                android:layout_centerHorizontal="true"
+                android:max="255" />
+
+            <TextView
+                android:id="@+id/greenNumberView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/greenNumber"
+                android:layout_toEndOf="@+id/greenNumber"
+                android:layout_toRightOf="@+id/greenNumber"
+                android:paddingLeft="5dp"
+                android:text="256"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/green"
+                android:paddingTop="10dp"
+                android:text="Blue"
+                android:textSize="16sp"
+                android:textStyle="normal|bold" />
+
+            <SeekBar
+                android:id="@+id/blueNumber"
+                android:layout_width="458dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/blue"
+                android:layout_centerHorizontal="true"
+                android:max="255" />
+
+            <TextView
+                android:id="@+id/blueNumberView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/blueNumber"
+                android:layout_toEndOf="@+id/blueNumber"
+                android:layout_toRightOf="@+id/blueNumber"
+                android:paddingLeft="5dp"
+                android:text="256"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/setIntensity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/blueNumber"
+                android:paddingTop="25dp"
+                android:text="Intensity:"
+                android:textSize="20sp"
+                android:textStyle="normal|bold"
+                tools:text="Intensity:" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/setState"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/intensityValue"
+                android:layout_marginTop="30dp"
+                android:padding="12dp"
+                android:text="Set state" />
+
+            <EditText
+                android:id="@+id/intensityValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/setIntensity"
+                android:layout_alignBottom="@+id/setIntensity"
+                android:layout_marginLeft="52dp"
+                android:layout_marginStart="52dp"
+                android:layout_toEndOf="@+id/setIntensity"
+                android:layout_toRightOf="@+id/setIntensity"
+                android:ems="3"
+                android:hint="value"
+                android:inputType="numberDecimal" />
+
+        </RelativeLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+</android.support.v4.widget.DrawerLayout>
