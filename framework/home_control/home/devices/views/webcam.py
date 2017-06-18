@@ -21,17 +21,9 @@ class WebcamManager(DeviceBaseManager):
         return db_webcam, FakeWebcam(db_webcam.mac_address, db_webcam.name, db_webcam.is_on, db_webcam.night_vision)
 
     def get(self, request, device_id):
-        db_webcam, webcam = self.initialize(device_id)
-        # connect to the thermostat
-        if webcam.connect():
-            if webcam.state:
-                webcam.turn_on()
-            else:
-                webcam.turn_off()
-            webcam.disconnect()
-            serializer = WebcamSerializer(db_webcam)
-            return Response(serializer.data)
-        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        db_webcam = self.get_object(device_id)
+        serializer = WebcamSerializer(db_webcam)
+        return Response(serializer.data)
 
     def post(self, request, device_id):
         db_webcam, webcam = self.initialize(device_id)

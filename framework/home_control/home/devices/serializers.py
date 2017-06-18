@@ -37,7 +37,7 @@ class DeviceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Device
-        fields = ('id', 'room', 'name', 'mac_address', 'is_on')
+        fields = ('id', 'room', 'name', 'mac_address', 'brand', 'is_on')
 
 
 class LightSerializer(DeviceSerializer):

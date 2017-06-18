@@ -1,1 +1,1 @@
-from .devices import MagicBlue, FakeWebcam, FakeThermostat, FakeLock
+from .devices import MagicBlue, FakeWebcam, FakeThermostat, FakeLock, FakeLight
