@@ -2,6 +2,7 @@ package com.ronesim.smarthouse.account;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -10,8 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ronesim.smarthouse.HomeActivity;
 import com.ronesim.smarthouse.R;
-import com.ronesim.smarthouse.model.User;
+import com.ronesim.smarthouse.model.Token;
 import com.ronesim.smarthouse.remote.APIService;
 import com.ronesim.smarthouse.remote.APIUtils;
 
@@ -23,6 +25,8 @@ import retrofit2.Response;
 
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String MY_PREFS_NAME = "prefsFile";
+
     private static final int REQUEST_SIGNUP = 0;
     @BindView(R.id.input_username)
     EditText inputUsername;
@@ -81,16 +85,19 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
 
         APIService apiService = APIUtils.getAPIService();
-        apiService.loginUser(username, password).enqueue(new Callback<User>() {
+        apiService.getAccessToken(username, password).enqueue(new Callback<Token>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<Token> call, Response<Token> response) {
                 if (response.isSuccessful()) {
                     loginStatus = true;
+                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                    editor.putString("token", response.body().getToken());
+                    editor.apply();
                 }
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<Token> call, Throwable t) {
                 loginStatus = false;
             }
         });
@@ -113,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
                 // Default: finish the Activity and log them in automatically
-                this.finish();
+                Toast.makeText(getBaseContext(), "Registration was ok. You can now login!", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -126,7 +133,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loginSuccess() {
         btnLogin.setEnabled(true);
-        finish();
+        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(intent);
     }
 
     private void loginFailed() {

@@ -60,9 +60,12 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
     private List<BluetoothDevice> devices;
     private ScanSettings settings;
 
-    public DeviceListAdapter(List<Device> devicesList, List<Product> products) {
+    private String token;
+
+    public DeviceListAdapter(List<Device> devicesList, List<Product> products, String token) {
         this.devicesList = devicesList;
         this.products = products;
+        this.token = token;
     }
 
     @Override
@@ -95,9 +98,9 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                     if (isChecked)
-                        devicesList.get(position).accept(new DeviceUpdateStateVisitor("state", "on"));
+                        devicesList.get(position).accept(new DeviceUpdateStateVisitor("state", "on", token));
                     else
-                        devicesList.get(position).accept(new DeviceUpdateStateVisitor("state", "off"));
+                        devicesList.get(position).accept(new DeviceUpdateStateVisitor("state", "off", token));
                 }
             });
         }

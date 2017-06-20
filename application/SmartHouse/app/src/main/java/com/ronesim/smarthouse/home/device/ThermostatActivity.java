@@ -1,5 +1,6 @@
 package com.ronesim.smarthouse.home.device;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -23,7 +24,7 @@ import retrofit2.Response;
 
 public class ThermostatActivity extends AppCompatActivity {
 
-    APIService apiService = APIUtils.getAPIService();
+    APIService apiService;
     @BindView(R.id.deviceName)
     TextView deviceName;
     @BindView(R.id.deviceAddress)
@@ -48,6 +49,8 @@ public class ThermostatActivity extends AppCompatActivity {
         // Adding Toolbar to Main screen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        setTokenAccess();
 
         // get light info
         Bundle bundle = getIntent().getExtras();
@@ -148,5 +151,17 @@ public class ThermostatActivity extends AppCompatActivity {
                 humidityValueView.setText(String.valueOf(seekBar.getProgress()));
             }
         });
+    }
+
+
+    private void setTokenAccess() {
+        final String MY_PREFS_NAME = "prefsFile";
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        String token = prefs.getString("token", null);
+
+        if (token != null && !token.isEmpty())
+            apiService = APIUtils.getAPIService(token);
+        else
+            apiService = APIUtils.getAPIService();
     }
 }

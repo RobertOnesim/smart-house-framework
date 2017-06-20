@@ -1,5 +1,6 @@
 package com.ronesim.smarthouse.home.device;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -44,7 +45,7 @@ public class LightActivity extends AppCompatActivity {
     @BindView(R.id.intensityValue)
     EditText intensityValue;
 
-    APIService apiService = APIUtils.getAPIService();
+    APIService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,8 @@ public class LightActivity extends AppCompatActivity {
         // Adding Toolbar to Main screen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        setTokenAccess();
 
         // get light info
         Bundle bundle = getIntent().getExtras();
@@ -186,6 +189,17 @@ public class LightActivity extends AppCompatActivity {
                 blueNumberView.setText(String.valueOf(seekBar.getProgress()));
             }
         });
+    }
+
+    private void setTokenAccess() {
+        final String MY_PREFS_NAME = "prefsFile";
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        String token = prefs.getString("token", null);
+
+        if (token != null && !token.isEmpty())
+            apiService = APIUtils.getAPIService(token);
+        else
+            apiService = APIUtils.getAPIService();
     }
 
 }

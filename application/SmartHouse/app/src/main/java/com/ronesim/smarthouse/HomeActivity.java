@@ -2,6 +2,7 @@ package com.ronesim.smarthouse;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +28,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.ronesim.smarthouse.account.LoginActivity;
 import com.ronesim.smarthouse.home.adapter.RoomListAdapter;
 import com.ronesim.smarthouse.home.adapter.util.ClickListener;
 import com.ronesim.smarthouse.home.adapter.util.RecyclerTouchListener;
@@ -44,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
-    private APIService apiService = APIUtils.getAPIService();
+    private APIService apiService;
     private DrawerLayout drawerLayout;
     private RoomListAdapter adapter;
     private List<Room> roomList = new ArrayList<>();
@@ -54,14 +54,12 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Login system
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, "BLE NOT SUPPORTED", Toast.LENGTH_LONG).show();
         }
-        // TODO ronesim start this only if login was accepted
+
+        setTokenAccess();
+
         // Adding Toolbar to Main screen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -259,5 +257,23 @@ public class HomeActivity extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    private void setTokenAccess() {
+        final String MY_PREFS_NAME = "prefsFile";
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        String token = prefs.getString("token", null);
+        System.out.println("TOOOKEN " + token);
+
+        if (token != null && !token.isEmpty())
+            apiService = APIUtils.getAPIService(token);
+        else
+            apiService = APIUtils.getAPIService();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // disable going back to the MainActivity
+        moveTaskToBack(true);
     }
 }

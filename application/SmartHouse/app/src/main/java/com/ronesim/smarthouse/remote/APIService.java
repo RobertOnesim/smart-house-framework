@@ -6,6 +6,7 @@ package com.ronesim.smarthouse.remote;
 
 import com.ronesim.smarthouse.model.Product;
 import com.ronesim.smarthouse.model.Room;
+import com.ronesim.smarthouse.model.Token;
 import com.ronesim.smarthouse.model.User;
 import com.ronesim.smarthouse.model.devices.Light;
 import com.ronesim.smarthouse.model.devices.Lock;
@@ -38,6 +39,11 @@ public interface APIService {
     @FormUrlEncoded
     Call<User> loginUser(@Field("username") String username,
                          @Field("password") String password);
+
+    @POST("/api/auth/token/")
+    @FormUrlEncoded
+    Call<Token> getAccessToken(@Field("username") String username,
+                               @Field("password") String password);
 
     // Room management
     @GET("/home")

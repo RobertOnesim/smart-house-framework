@@ -2,6 +2,7 @@ package com.ronesim.smarthouse.home.room;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -39,10 +40,11 @@ import retrofit2.Response;
 public class RoomActivity extends AppCompatActivity {
     @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
-    private APIService apiService = APIUtils.getAPIService();
+    private APIService apiService;
     private List<Product> products = new ArrayList<>();
 
     private DeviceListAdapter adapter;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,8 @@ public class RoomActivity extends AppCompatActivity {
         // Adding Toolbar to Main screen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        setTokenAccess();
 
         // get room info
         Gson gson = new Gson();
@@ -137,7 +141,7 @@ public class RoomActivity extends AppCompatActivity {
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 products = response.body();
                 // set adapter
-                adapter = new DeviceListAdapter(deviceList, products);
+                adapter = new DeviceListAdapter(deviceList, products, token);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -160,5 +164,16 @@ public class RoomActivity extends AppCompatActivity {
         Intent returnIntent = new Intent();
         setResult(RESULT_OK, returnIntent);
         finish();
+    }
+
+    private void setTokenAccess() {
+        final String MY_PREFS_NAME = "prefsFile";
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        token = prefs.getString("token", null);
+
+        if (token != null && !token.isEmpty())
+            apiService = APIUtils.getAPIService(token);
+        else
+            apiService = APIUtils.getAPIService();
     }
 }

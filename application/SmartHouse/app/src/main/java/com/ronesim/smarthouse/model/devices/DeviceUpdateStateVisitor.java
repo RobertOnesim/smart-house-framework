@@ -13,13 +13,18 @@ import retrofit2.Response;
  */
 
 public class DeviceUpdateStateVisitor implements DeviceVisitor {
-    private APIService apiService = APIUtils.getAPIService();
+    private APIService apiService;
     private String action;
     private String state;
 
-    public DeviceUpdateStateVisitor(String action, String state) {
+    public DeviceUpdateStateVisitor(String action, String state, String token) {
         this.action = action;
         this.state = state;
+
+        if (token != null && !token.isEmpty())
+            apiService = APIUtils.getAPIService(token);
+        else
+            apiService = APIUtils.getAPIService();
     }
 
     @Override
