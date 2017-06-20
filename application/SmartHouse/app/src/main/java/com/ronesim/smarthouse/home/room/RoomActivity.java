@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -49,6 +50,10 @@ public class RoomActivity extends AppCompatActivity {
         setContentView(R.layout.activity_room);
         ButterKnife.bind(this);
 
+        // Adding Toolbar to Main screen
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // get room info
         Gson gson = new Gson();
         String strRoom = getIntent().getStringExtra("room");
@@ -60,29 +65,31 @@ public class RoomActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(RoomActivity.this, recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Intent intent = new Intent();
-                switch (deviceList.get(position).getType()) {
-                    case "light":
-                        intent = new Intent(view.getContext(), LightActivity.class);
-                        break;
-                    case "plug":
-                        //intent = new Intent(view.getContext(), LightActivity.class);
-                        break;
-                    case "thermostat":
-                        intent = new Intent(view.getContext(), ThermostatActivity.class);
-                        break;
-                    case "lock":
-                        //intent = new Intent(view.getContext(), LightActivity.class);
-                        break;
-                    case "webcam":
-                        //intent = new Intent(view.getContext(), LightActivity.class);
-                        break;
+                if (position < deviceList.size()) {
+                    Intent intent = new Intent();
+                    switch (deviceList.get(position).getType()) {
+                        case "light":
+                            intent = new Intent(view.getContext(), LightActivity.class);
+                            break;
+                        case "plug":
+                            //intent = new Intent(view.getContext(), LightActivity.class);
+                            break;
+                        case "thermostat":
+                            intent = new Intent(view.getContext(), ThermostatActivity.class);
+                            break;
+                        case "lock":
+                            //intent = new Intent(view.getContext(), LightActivity.class);
+                            break;
+                        case "webcam":
+                            //intent = new Intent(view.getContext(), LightActivity.class);
+                            break;
 
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("device_id", deviceList.get(position).getId());
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
-                Bundle bundle = new Bundle();
-                bundle.putInt("device_id", deviceList.get(position).getId());
-                intent.putExtras(bundle);
-                startActivity(intent);
             }
 
             @Override

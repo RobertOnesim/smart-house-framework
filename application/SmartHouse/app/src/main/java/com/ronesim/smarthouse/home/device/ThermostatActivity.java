@@ -3,6 +3,7 @@ package com.ronesim.smarthouse.home.device;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -43,6 +44,10 @@ public class ThermostatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thermostat);
         ButterKnife.bind(this);
+
+        // Adding Toolbar to Main screen
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // get light info
         Bundle bundle = getIntent().getExtras();

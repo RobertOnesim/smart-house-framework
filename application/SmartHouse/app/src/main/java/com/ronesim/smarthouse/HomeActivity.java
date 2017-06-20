@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.ronesim.smarthouse.account.LoginActivity;
 import com.ronesim.smarthouse.home.adapter.RoomListAdapter;
 import com.ronesim.smarthouse.home.adapter.util.ClickListener;
 import com.ronesim.smarthouse.home.adapter.util.RecyclerTouchListener;
@@ -54,8 +55,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // Login system
-        //Intent intent = new Intent(this, LoginActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, "BLE NOT SUPPORTED", Toast.LENGTH_LONG).show();
