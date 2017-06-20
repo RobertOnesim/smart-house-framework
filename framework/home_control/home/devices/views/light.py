@@ -3,7 +3,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 
-from home_automation import MagicBlue
+from home_automation import MagicBlue, FakeLight
 from home_control.home.devices.serializers import LightSerializer
 from home_control.models import Light
 from .device_base import DeviceBaseManager
@@ -18,21 +18,17 @@ class LightManager(DeviceBaseManager):
 
     def initialize(self, device_id):
         db_light = self.get_object(device_id)
-        return db_light, MagicBlue(db_light.mac_address, db_light.name, db_light.is_on, db_light.color,
-                                   db_light.intensity)
+        if db_light.brand == "MagicBlue":
+            return db_light, MagicBlue(db_light.mac_address, db_light.name, db_light.is_on, db_light.color,
+                                       db_light.intensity)
+        if db_light.brand == "FakeLight":
+            return db_light, FakeLight(db_light.mac_address, db_light.name, db_light.is_on, db_light.color,
+                                       db_light.intensity)
 
     def get(self, request, device_id):
-        db_light, light = self.initialize(device_id)
-        # connect to the light
-        if light.connect():
-            if light.state:
-                light.turn_on()
-            else:
-                light.turn_off()
-            light.disconnect()
-            serializer = LightSerializer(db_light)
-            return Response(serializer.data)
-        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        db_light = self.get_object(device_id)
+        serializer = LightSerializer(db_light)
+        return Response(serializer.data)
 
     def post(self, request, device_id):
         db_light, light = self.initialize(device_id)

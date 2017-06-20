@@ -21,17 +21,9 @@ class LockManager(DeviceBaseManager):
         return db_lock, FakeLock(db_lock.mac_address, db_lock.name, db_lock.is_on, db_lock.pin_code)
 
     def get(self, request, device_id):
-        db_lock, lock = self.initialize(device_id)
-        # connect to the thermostat
-        if lock.connect():
-            if lock.state:
-                lock.turn_on()
-            else:
-                lock.turn_off()
-            lock.disconnect()
-            serializer = LockSerializer(db_lock)
-            return Response(serializer.data)
-        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        db_lock = self.get_object(device_id)
+        serializer = LockSerializer(db_lock)
+        return Response(serializer.data)
 
     def post(self, request, device_id):
         db_lock, lock = self.initialize(device_id)

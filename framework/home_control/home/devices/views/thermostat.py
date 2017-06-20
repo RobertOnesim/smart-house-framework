@@ -22,17 +22,9 @@ class ThermostatManager(DeviceBaseManager):
                                         db_therm.humidity)
 
     def get(self, request, device_id):
-        db_therm, thermostat = self.initialize(device_id)
-        # connect to the thermostat
-        if thermostat.connect():
-            if thermostat.state:
-                thermostat.turn_on()
-            else:
-                thermostat.turn_off()
-            thermostat.disconnect()
-            serializer = ThermostatSerializer(db_therm)
-            return Response(serializer.data)
-        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        db_therm = self.get_object(device_id)
+        serializer = ThermostatSerializer(db_therm)
+        return Response(serializer.data)
 
     def post(self, request, device_id):
         db_therm, thermostat = self.initialize(device_id)
