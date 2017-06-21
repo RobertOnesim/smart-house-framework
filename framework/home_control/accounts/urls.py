@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^register/$', UserCreateAPIView.as_view(), name="register"),
     # api/login/
     url(r'^login/$', UserLoginAPIView.as_view(), name="login"),
-
+    # api/auth/token
     url(r'^auth/token/$', obtain_jwt_token),
 
 ]

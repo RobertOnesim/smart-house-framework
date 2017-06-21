@@ -9,4 +9,6 @@ urlpatterns = [
     url(r'^room/', include('home_control.home.room.urls'), name="room"),
     # home/device/
     url(r'^device/', include('home_control.home.devices.urls'), name="device"),
+    # home/rules/
+    url(r'^rules/', include('home_control.home.rules.urls'), name="rules"),
 ]
