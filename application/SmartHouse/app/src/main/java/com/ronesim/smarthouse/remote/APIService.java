@@ -4,6 +4,7 @@ package com.ronesim.smarthouse.remote;
  * Created by ronesim on 13.04.2017.
  */
 
+import com.ronesim.smarthouse.model.HomeRule;
 import com.ronesim.smarthouse.model.Product;
 import com.ronesim.smarthouse.model.Room;
 import com.ronesim.smarthouse.model.Token;
@@ -112,4 +113,11 @@ public interface APIService {
     Call<ResponseBody> updateWebcam(@Path("device_id") int deviceId,
                                     @Field("action") String action,
                                     @Field("state") String state);
+
+    @GET("/home/rules")
+    Call<List<HomeRule>> getHomeRulesList();
+
+    @POST("/home/rules/")
+    @FormUrlEncoded
+    Call<ResponseBody> setHomeRules(@Field("homeRulesIDs") List<Integer> homeRules);
 }
