@@ -46,6 +46,19 @@ public class DeviceUpdateStateVisitor implements DeviceVisitor {
 
     @Override
     public void visit(Plug plug) {
+        apiService.updatePlug(plug.getId(), action, state)
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful())
+                            System.out.println("done");
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        System.out.println("failed " + t.getMessage());
+                    }
+                });
 
     }
 

@@ -32,13 +32,17 @@ import com.ronesim.smarthouse.home.adapter.RoomListAdapter;
 import com.ronesim.smarthouse.home.adapter.util.ClickListener;
 import com.ronesim.smarthouse.home.adapter.util.RecyclerTouchListener;
 import com.ronesim.smarthouse.home.room.RoomActivity;
+import com.ronesim.smarthouse.model.HomeRule;
 import com.ronesim.smarthouse.model.Room;
 import com.ronesim.smarthouse.remote.APIService;
 import com.ronesim.smarthouse.remote.APIUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,6 +52,7 @@ public class HomeActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private RoomListAdapter adapter;
     private List<Room> roomList = new ArrayList<>();
+    private List<HomeRule> homeRulesList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +153,19 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Room>> call, Throwable t) {
-                Log.e("Failed", t.getMessage());
+                Toast.makeText(getBaseContext(), "Failed to get data from server.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Data - home rules
+        apiService.getHomeRulesList().enqueue(new Callback<List<HomeRule>>() {
+            @Override
+            public void onResponse(Call<List<HomeRule>> call, Response<List<HomeRule>> response) {
+                homeRulesList = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<List<HomeRule>> call, Throwable t) {
                 Toast.makeText(getBaseContext(), "Failed to get data from server.", Toast.LENGTH_LONG).show();
             }
         });
@@ -169,8 +186,12 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.action_settings:
                 System.out.println("Hit Settings");
                 return true;
+            case R.id.home_rules:
+                setAutomationRules();
+                return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
+                return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
@@ -238,6 +259,58 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(itemAnimator);
     }
 
+    private void setAutomationRules() {
+        final Set<Integer> selectedItems = new HashSet<>();
+        CharSequence[] items = processNames();
+        boolean[] checkedItems = processValue();
+        AlertDialog dialog = new AlertDialog.Builder(HomeActivity.this)
+                .setTitle("Set home automation rules")
+                .setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int index, boolean isChecked) {
+                        if (isChecked) {
+                            selectedItems.add(homeRulesList.get(index).getId());
+                            homeRulesList.get(index).setSet(true);
+                        } else {
+                            homeRulesList.get(index).setSet(false);
+                            selectedItems.remove(homeRulesList.get(index).getId());
+                        }
+                    }
+                })
+                .setPositiveButton("Set rules", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Data - home rules
+                        if (selectedItems.isEmpty()) {
+                            selectedItems.add(-1);
+                        }
+                        apiService.setHomeRules(new ArrayList<Integer>(selectedItems)).enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(getBaseContext(), "Rules have been set!", Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Toast.makeText(getBaseContext(), "Failed to set the rules", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .create();
+        dialog.show();
+
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
@@ -263,12 +336,28 @@ public class HomeActivity extends AppCompatActivity {
         final String MY_PREFS_NAME = "prefsFile";
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         String token = prefs.getString("token", null);
-        System.out.println("TOOOKEN " + token);
 
         if (token != null && !token.isEmpty())
             apiService = APIUtils.getAPIService(token);
         else
             apiService = APIUtils.getAPIService();
+    }
+
+    private CharSequence[] processNames() {
+        List<String> items = new ArrayList<>();
+        for (HomeRule homerule : homeRulesList) {
+            items.add(homerule.getType() + ": " + homerule.getDescription());
+        }
+        return items.toArray(new CharSequence[items.size()]);
+    }
+
+    private boolean[] processValue() {
+        boolean[] items = new boolean[homeRulesList.size()];
+        int index = 0;
+        for (HomeRule homerule : homeRulesList) {
+            items[index++] = homerule.isSet();
+        }
+        return items;
     }
 
     @Override

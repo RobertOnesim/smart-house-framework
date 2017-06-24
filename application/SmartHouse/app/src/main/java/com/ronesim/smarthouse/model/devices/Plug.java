@@ -16,6 +16,15 @@ public class Plug extends Device {
     @Expose
     private String schedule;
 
+    public Plug(com.ronesim.smarthouse.model.Device device) {
+        setId(device.getId());
+        setName(device.getName());
+        setRoom(device.getRoom());
+        setBrad(device.getBrad());
+        setMacAddress(device.getMacAddress());
+        setOn(device.isOn());
+    }
+
     @Override
     public void accept(DeviceVisitor deviceVisitor) {
         deviceVisitor.visit(this);

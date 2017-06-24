@@ -10,7 +10,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -61,7 +60,7 @@ public class RoomActivity extends AppCompatActivity {
         // get room info
         Gson gson = new Gson();
         String strRoom = getIntent().getStringExtra("room");
-        Room room = gson.fromJson(strRoom, Room.class);
+        final Room room = gson.fromJson(strRoom, Room.class);
         final List<Device> deviceList = room.getDevices();
 
         // set the recycler view
@@ -70,29 +69,27 @@ public class RoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                 if (position < deviceList.size()) {
+
                     Intent intent = new Intent();
+                    boolean startIntent = false;
                     switch (deviceList.get(position).getType()) {
                         case "light":
                             intent = new Intent(view.getContext(), LightActivity.class);
-                            break;
-                        case "plug":
-                            //intent = new Intent(view.getContext(), LightActivity.class);
+                            startIntent = true;
                             break;
                         case "thermostat":
                             intent = new Intent(view.getContext(), ThermostatActivity.class);
+                            startIntent = true;
                             break;
-                        case "lock":
-                            //intent = new Intent(view.getContext(), LightActivity.class);
+                        default:
                             break;
-                        case "webcam":
-                            //intent = new Intent(view.getContext(), LightActivity.class);
-                            break;
-
                     }
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("device_id", deviceList.get(position).getId());
-                    intent.putExtras(bundle);
-                    startActivity(intent);
+                    if (startIntent) {
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("device_id", deviceList.get(position).getId());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
                 }
             }
 
@@ -141,13 +138,12 @@ public class RoomActivity extends AppCompatActivity {
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 products = response.body();
                 // set adapter
-                adapter = new DeviceListAdapter(deviceList, products, token);
+                adapter = new DeviceListAdapter(deviceList, products, token, room.getId());
                 recyclerView.setAdapter(adapter);
             }
 
             @Override
             public void onFailure(Call<List<Product>> call, Throwable t) {
-                Log.e("Failed", t.getMessage());
                 Toast.makeText(getBaseContext(), "Failed to get products from server.", Toast.LENGTH_LONG).show();
             }
         });

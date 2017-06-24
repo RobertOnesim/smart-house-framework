@@ -32,12 +32,23 @@ import com.ronesim.smarthouse.R;
 import com.ronesim.smarthouse.model.Product;
 import com.ronesim.smarthouse.model.devices.Device;
 import com.ronesim.smarthouse.model.devices.DeviceUpdateStateVisitor;
+import com.ronesim.smarthouse.model.devices.Light;
+import com.ronesim.smarthouse.model.devices.Lock;
+import com.ronesim.smarthouse.model.devices.Plug;
+import com.ronesim.smarthouse.model.devices.Thermostat;
+import com.ronesim.smarthouse.model.devices.Webcam;
+import com.ronesim.smarthouse.remote.APIService;
+import com.ronesim.smarthouse.remote.APIUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by ronesim on 07.05.2017.
@@ -61,11 +72,14 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
     private ScanSettings settings;
 
     private String token;
+    private String deviceName;
+    private int roomId;
 
-    public DeviceListAdapter(List<Device> devicesList, List<Product> products, String token) {
+    public DeviceListAdapter(List<Device> devicesList, List<Product> products, String token, int roomId) {
         this.devicesList = devicesList;
         this.products = products;
         this.token = token;
+        this.roomId = roomId;
     }
 
     @Override
@@ -132,6 +146,12 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
         notifyItemRemoved(position);
     }
 
+    // Insert a new item to the RecyclerView on a predefined position
+    public void insert(int position, Device device) {
+        devicesList.add(position, device);
+        notifyItemInserted(position);
+    }
+
     private void addNewDevice(View view) {
         View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.add_device_dialog, null);
         // create first spinner
@@ -169,8 +189,8 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
                     @Override
                     public void onClick(View view) {
                         // validate name
-                        String roomName = inputDeviceName.getText().toString();
-                        if (roomName.isEmpty()) {
+                        deviceName = inputDeviceName.getText().toString();
+                        if (deviceName.isEmpty()) {
                             inputDeviceName.setError("Room name cannot be empty.");
                         } else {
                             // depending on item selected need to find the device type
@@ -213,13 +233,18 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
                                 case "Plug":
                                     switch (name) {
                                         case "TP-Link":
+                                            addDeviceToHouse(type, name, "50:C7:BF:8A:B8:D2");
                                             break;
                                         default:
                                             break;
                                     }
                                     break;
-                                default:
-                                    break;
+                                case "Thermostat":
+                                    switch (name) {
+                                        case "Fake":
+                                            addDeviceToHouse(type, name, "00:00:00:00:00");
+                                            break;
+                                    }
                             }
                             alertDialog.dismiss();
                         }
@@ -301,7 +326,6 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
                     bluetoothAdapter.stopLeScan(mLeScanCallback);
                     // when search finish process the result
                     processResults();
-                    progressDialog.dismiss();
                 }
             }, SCAN_PERIOD);
             bluetoothAdapter.startLeScan(mLeScanCallback);
@@ -310,11 +334,46 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceHolder> {
     }
 
     private void processResults() {
-        HashSet<String> lights = new HashSet<>();
         for (BluetoothDevice bd : devices)
-            if (bd.getName().startsWith("LEDBLE") && !lights.contains(bd.getAddress())) {
-                lights.add(bd.getAddress());
-                System.out.println("HERE " + bd.getAddress());
+            if (bd.getName().startsWith("LEDBLE")) {
+                addDeviceToHouse("Light", "MagicBlue", bd.getAddress());
+                break;
             }
+    }
+
+    private void addDeviceToHouse(final String type, String brand, String mac) {
+        APIService apiService = APIUtils.getAPIService(token);
+        apiService.addDevice(type, deviceName, brand, mac, roomId).enqueue(new Callback<com.ronesim.smarthouse.model.Device>() {
+            @Override
+            public void onResponse(Call<com.ronesim.smarthouse.model.Device> call, Response<com.ronesim.smarthouse.model.Device> response) {
+                if (response.code() == 201) {
+                    com.ronesim.smarthouse.model.Device deviceAdded = response.body();
+                    switch (type) {
+                        case "Light":
+                            insert(0, new Light(deviceAdded));
+                            break;
+                        case "Plug":
+                            insert(0, new Plug(deviceAdded));
+                            break;
+                        case "Thermostat":
+                            insert(0, new Thermostat(deviceAdded));
+                            break;
+                        case "Lock":
+                            insert(0, new Lock(deviceAdded));
+                            break;
+                        case "Webcam":
+                            insert(0, new Webcam(deviceAdded));
+                            break;
+                    }
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<com.ronesim.smarthouse.model.Device> call, Throwable t) {
+                System.out.println("Here " + t.getMessage());
+                progressDialog.dismiss();
+            }
+        });
     }
 }
