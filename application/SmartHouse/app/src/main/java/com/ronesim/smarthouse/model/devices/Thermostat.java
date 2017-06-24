@@ -16,6 +16,17 @@ public class Thermostat extends Device {
     @Expose
     private int humidity;
 
+    public Thermostat(com.ronesim.smarthouse.model.Device device) {
+        setId(device.getId());
+        setName(device.getName());
+        setRoom(device.getRoom());
+        setBrad(device.getBrad());
+        setMacAddress(device.getMacAddress());
+        setOn(device.isOn());
+        this.temperature = 0;
+        this.humidity = 0;
+    }
+
     @Override
     public void accept(DeviceVisitor deviceVisitor) {
         deviceVisitor.visit(this);

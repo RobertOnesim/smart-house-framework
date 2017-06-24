@@ -16,6 +16,17 @@ public class Light extends Device {
     @Expose
     private double intensity;
 
+    public Light(com.ronesim.smarthouse.model.Device device) {
+        setId(device.getId());
+        setName(device.getName());
+        setRoom(device.getRoom());
+        setBrad(device.getBrad());
+        setMacAddress(device.getMacAddress());
+        setOn(device.isOn());
+        this.color = "150 150 150";
+        this.intensity = 1.0;
+    }
+
     @Override
     public void accept(DeviceVisitor deviceVisitor) {
         deviceVisitor.visit(this);

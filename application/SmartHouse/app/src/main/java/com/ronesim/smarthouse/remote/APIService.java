@@ -64,6 +64,14 @@ public interface APIService {
     @GET("/home/device/manage")
     Call<List<Product>> productList();
 
+    @POST("/home/device/manage/")
+    @FormUrlEncoded
+    Call<com.ronesim.smarthouse.model.Device> addDevice(@Field("device_type") String deviceType,
+                                                        @Field("name") String name,
+                                                        @Field("brand") String brand,
+                                                        @Field("mac_address") String mac_address,
+                                                        @Field("roomId") int roomId);
+
     @DELETE("/home/device/manage/{device_type}/{device_id}/")
     Call<ResponseBody> deleteDevice(@Path("device_type") String deviceType,
                                     @Path("device_id") int deviceId);
@@ -79,6 +87,16 @@ public interface APIService {
                                    @Field("state") String state,
                                    @Field("color") String color,
                                    @Field("intensity") Float intensity);
+
+    // plug
+    @GET("/home/device/plug/{device_id}")
+    Call<Light> getPlug(@Path("device_id") int deviceId);
+
+    @POST("/home/device/plug/{device_id}/")
+    @FormUrlEncoded
+    Call<ResponseBody> updatePlug(@Path("device_id") int deviceId,
+                                  @Field("action") String action,
+                                  @Field("state") String state);
 
     // lock
     @GET("/home/device/lock/{device_id}")

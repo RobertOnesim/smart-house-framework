@@ -1,13 +1,13 @@
-package com.ronesim.smarthouse.model.devices;
+package com.ronesim.smarthouse.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by ronesim on 06.06.2017.
+ * Created by ronesim on 24.06.2017.
  */
 
-public abstract class Device {
+public class Device {
     @SerializedName("id")
     @Expose
     private int id;
@@ -27,11 +27,14 @@ public abstract class Device {
     @Expose
     private boolean isOn;
 
-    public abstract void accept(DeviceVisitor deviceVisitor);
-
-    public abstract int getImageLogo();
-
-    public abstract String getType();
+    public Device(int id, int room, String name, String macAddress, String brad, boolean isOn) {
+        this.id = id;
+        this.room = room;
+        this.name = name;
+        this.macAddress = macAddress;
+        this.brad = brad;
+        this.isOn = isOn;
+    }
 
     public int getId() {
         return id;
@@ -65,14 +68,6 @@ public abstract class Device {
         this.macAddress = macAddress;
     }
 
-    public boolean isOn() {
-        return isOn;
-    }
-
-    public void setOn(boolean on) {
-        isOn = on;
-    }
-
     public String getBrad() {
         return brad;
     }
@@ -81,14 +76,11 @@ public abstract class Device {
         this.brad = brad;
     }
 
-    @Override
-    public String toString() {
-        return "Device{" +
-                "id=" + id +
-                ", room=" + room +
-                ", name='" + name + '\'' +
-                ", macAddress='" + macAddress + '\'' +
-                ", isOn=" + isOn +
-                '}';
+    public boolean isOn() {
+        return isOn;
+    }
+
+    public void setOn(boolean on) {
+        isOn = on;
     }
 }
