@@ -48,17 +48,23 @@ class DeviceManager(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = DeviceSerializer.get_device_instance(request.data['device_type'], request.data['info'])
-        # increment number of devices in the room update time and last action
-        room = Room.objects.get(pk=request.data['info']['room'])
-        room.number_of_devices += 1
-        room.info = "Added a new device"
-        room.date_update = timezone.now()
-        room.save()
-
+        info = dict(room=request.data['roomId'],
+                    mac_address=request.data['mac_address'],
+                    brand=request.data['brand'],
+                    name=request.data['name'],
+                    is_on=False,
+                    )
+        serializer = DeviceSerializer.get_device_instance(request.data['device_type'], info=info)
         if serializer.is_valid():
+            # increment number of devices in the room update time and last action
+            room = Room.objects.get(pk=info['room'])
+            room.number_of_devices += 1
+            room.info = "Added a new device"
+            room.date_update = timezone.now()
+            room.save()
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            info['id'] = serializer.data['id']
+            return Response(info, status=status.HTTP_201_CREATED)
         return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, device_type, device_id):

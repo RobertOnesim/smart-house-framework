@@ -1,4 +1,4 @@
-from home_automation.devices import FakeLock, FakeThermostat, FakeWebcam
+from home_automation.devices import TPLink
 
 # print(bytearray([0xCC, 0x24, 0x33]))
 # print(0x24)
@@ -21,20 +21,25 @@ from home_automation.devices import FakeLock, FakeThermostat, FakeWebcam
 # mb.set_random_color()
 #
 # mb.disconnect()
+#
+# fl = FakeLock("dsada", "FakeLock", True, 1235)
+#
+# print(fl.connect())
+# print(fl.pin_code)
+# fl.change_pin_code(4356)
+# print(fl.pin_code)
+#
+# ft = FakeThermostat("dsada", "FakeLock", True, 25, 23)
+#
+# print(ft.connect())
+# print(ft.temperature, ft.humidity)
+# ft.set_temperature(46)
+# print(ft.temperature)
+#
+# fw = FakeWebcam("DSAD", "FakeWebcam", True, True)
+# print(fw.night_vision)
 
-fl = FakeLock("dsada", "FakeLock", True, 1235)
+plug = TPLink("dsaas", "dsada", False, "192.168.100.21", False, "")
 
-print(fl.connect())
-print(fl.pin_code)
-fl.change_pin_code(4356)
-print(fl.pin_code)
-
-ft = FakeThermostat("dsada", "FakeLock", True, 25, 23)
-
-print(ft.connect())
-print(ft.temperature, ft.humidity)
-ft.set_temperature(46)
-print(ft.temperature)
-
-fw = FakeWebcam("DSAD", "FakeWebcam", True, True)
-print(fw.night_vision)
+plug.connect()
+plug.turn_on()

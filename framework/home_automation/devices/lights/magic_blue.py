@@ -26,7 +26,7 @@ def connection_required(func):
 
 
 class MagicBlue(Light):
-    def __init__(self, mac_address, device_user_name, is_on, color, intensity):
+    def __init__(self, mac_address, device_user_name, is_on, ip_address, color, intensity):
         self._connection = None
         self._addr_type = btle.ADDR_TYPE_PUBLIC
         self._mac_address = mac_address
@@ -34,6 +34,7 @@ class MagicBlue(Light):
         self._state = is_on
         self._color = color
         self._intensity = intensity
+        self._ip_address = ip_address
 
     def connect(self):
         """
@@ -130,6 +131,10 @@ class MagicBlue(Light):
     @property
     def mac_address(self):
         return self._mac_address
+
+    @property
+    def ip_address(self):
+        return self._ip_address
 
     @property
     def state(self):

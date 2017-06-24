@@ -18,7 +18,7 @@ class LockManager(DeviceBaseManager):
 
     def initialize(self, device_id):
         db_lock = self.get_object(device_id)
-        return db_lock, FakeLock(db_lock.mac_address, db_lock.name, db_lock.is_on, db_lock.pin_code)
+        return db_lock, FakeLock(db_lock.mac_address, db_lock.name, db_lock.is_on, db_lock.ip_address, db_lock.pin_code)
 
     def get(self, request, device_id):
         db_lock = self.get_object(device_id)

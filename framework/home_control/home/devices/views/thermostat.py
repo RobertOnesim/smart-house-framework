@@ -18,8 +18,8 @@ class ThermostatManager(DeviceBaseManager):
 
     def initialize(self, device_id):
         db_therm = self.get_object(device_id)
-        return db_therm, FakeThermostat(db_therm.mac_address, db_therm.name, db_therm.is_on, db_therm.temperature,
-                                        db_therm.humidity)
+        return db_therm, FakeThermostat(db_therm.mac_address, db_therm.name, db_therm.is_on, db_therm.ip_address,
+                                        db_therm.temperature, db_therm.humidity)
 
     def get(self, request, device_id):
         db_therm = self.get_object(device_id)

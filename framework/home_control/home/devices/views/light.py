@@ -19,11 +19,11 @@ class LightManager(DeviceBaseManager):
     def initialize(self, device_id):
         db_light = self.get_object(device_id)
         if db_light.brand == "MagicBlue":
-            return db_light, MagicBlue(db_light.mac_address, db_light.name, db_light.is_on, db_light.color,
-                                       db_light.intensity)
+            return db_light, MagicBlue(db_light.mac_address, db_light.name, db_light.is_on, db_light.ip_address,
+                                       db_light.color, db_light.intensity)
         if db_light.brand == "FakeLight":
-            return db_light, FakeLight(db_light.mac_address, db_light.name, db_light.is_on, db_light.color,
-                                       db_light.intensity)
+            return db_light, FakeLight(db_light.mac_address, db_light.name, db_light.is_on, db_light.ip_address,
+                                       db_light.color, db_light.intensity)
 
     def get(self, request, device_id):
         db_light = self.get_object(device_id)

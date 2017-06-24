@@ -14,6 +14,9 @@ urlpatterns = [
     # home/device/light/<device_id>
     url(r'light/(?P<device_id>[0-9]+)/$', views.LightManager.as_view(), name='get_light'),
 
+    # home/device/plug/<device_id>
+    url(r'plug/(?P<device_id>[0-9]+)/$', views.PlugManager.as_view(), name='get_plug'),
+
     # home/device/thermostat/<device_id>
     url(r'thermostat/(?P<device_id>[0-9]+)/$', views.ThermostatManager.as_view(), name='get_thermostat'),
 

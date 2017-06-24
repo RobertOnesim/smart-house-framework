@@ -2,13 +2,14 @@ from .thermostat import Thermostat
 
 
 class FakeThermostat(Thermostat):
-    def __init__(self, mac_address, device_user_name, is_on, temperature, humidity):
+    def __init__(self, mac_address, device_user_name, is_on, ip_address, temperature, humidity):
         self._connection = None
         self._mac_address = mac_address
         self._name = device_user_name
         self._state = is_on
         self._temperature = temperature
         self._humidity = humidity
+        self._ip_address = ip_address
 
     def connect(self):
         self._connection = True
@@ -43,6 +44,10 @@ class FakeThermostat(Thermostat):
     @property
     def mac_address(self):
         return self._mac_address
+
+    @property
+    def ip_address(self):
+        return self._ip_address
 
     @property
     def state(self):

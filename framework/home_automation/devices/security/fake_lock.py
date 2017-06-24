@@ -2,12 +2,13 @@ from home_automation.devices.security.lock import Lock
 
 
 class FakeLock(Lock):
-    def __init__(self, mac_address, device_user_name, is_on, pin_code):
+    def __init__(self, mac_address, device_user_name, is_on, ip_address, pin_code):
         self._connection = None
         self._mac_address = mac_address
         self._name = device_user_name
         self._state = is_on
         self._pin_code = pin_code
+        self._ip_address = ip_address
 
     def connect(self):
         self._connection = True
@@ -44,6 +45,10 @@ class FakeLock(Lock):
     @property
     def mac_address(self):
         return self._mac_address
+
+    @property
+    def ip_address(self):
+        return self._ip_address
 
     @property
     def state(self):

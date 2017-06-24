@@ -18,7 +18,8 @@ class WebcamManager(DeviceBaseManager):
 
     def initialize(self, device_id):
         db_webcam = self.get_object(device_id)
-        return db_webcam, FakeWebcam(db_webcam.mac_address, db_webcam.name, db_webcam.is_on, db_webcam.night_vision)
+        return db_webcam, FakeWebcam(db_webcam.mac_address, db_webcam.name, db_webcam.is_on, db_webcam.ip_address,
+                                     db_webcam.night_vision)
 
     def get(self, request, device_id):
         db_webcam = self.get_object(device_id)

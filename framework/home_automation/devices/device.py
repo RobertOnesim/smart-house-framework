@@ -21,6 +21,11 @@ class Device(metaclass=Singleton):
 
     @property
     @abstractmethod
+    def ip_address(self):
+        pass
+
+    @property
+    @abstractmethod
     def state(self):
         pass
 
