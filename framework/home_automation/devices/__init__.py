@@ -1,4 +1,4 @@
-from .lights import MagicBlue, FakeLight
+from .lights import MagicBlue, FakeLight, LightFactory
 from .plugs import TPLink
 from .security import FakeLock
 from .singleton import Singleton

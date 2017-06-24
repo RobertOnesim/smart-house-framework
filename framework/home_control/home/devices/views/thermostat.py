@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from home_automation import FakeThermostat
+from home_automation.rules import light_thermostat
 from home_control.home.devices import ThermostatSerializer
 from home_control.models import Thermostat
 from .device_base import DeviceBaseManager
@@ -62,6 +63,9 @@ class ThermostatManager(DeviceBaseManager):
             # store new info in the database
             db_therm.temperature = temperature
             db_therm.save()
+
+            # apply rules
+            light_thermostat.temperature_to_rgb(temperature, db_therm.room.id)
             thermostat.disconnect()
 
     def change_humidity(self, db_therm, thermostat, humidity):

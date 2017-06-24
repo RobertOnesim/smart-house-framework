@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from home_automation import FakeLock
+from home_automation.rules import home_leave_scenario, home_arrive_scenario
 from home_control.home.devices import LockSerializer
 from home_control.models import Lock
 from .device_base import DeviceBaseManager
@@ -36,6 +37,13 @@ class LockManager(DeviceBaseManager):
                 # change state (on/off)
                 db_lock.room.info = "Lock (" + db_lock.name + ") state was changed."
                 self.change_state(db_lock, lock, request.data['state'])
+
+                # do automation
+                if request.data['state'] == "on":
+                    home_leave_scenario(db_lock.room.id)
+                else:
+                    home_arrive_scenario(db_lock.room.id)
+
                 changed = True
             elif action_type == 'pin':
                 # change lock pin code
