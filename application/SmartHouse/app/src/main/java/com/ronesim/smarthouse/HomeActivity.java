@@ -260,7 +260,9 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setAutomationRules() {
-        final Set<Integer> selectedItems = new HashSet<>();
+        final Set<Integer> onSelectedItems = new HashSet<>();
+        final Set<Integer> offSelectedItems = new HashSet<>();
+
         CharSequence[] items = processNames();
         boolean[] checkedItems = processValue();
         AlertDialog dialog = new AlertDialog.Builder(HomeActivity.this)
@@ -270,11 +272,13 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int index, boolean isChecked) {
                         if (isChecked) {
-                            selectedItems.add(homeRulesList.get(index).getId());
+                            onSelectedItems.add(homeRulesList.get(index).getId());
+                            offSelectedItems.remove(homeRulesList.get(index).getId());
                             homeRulesList.get(index).setSet(true);
                         } else {
                             homeRulesList.get(index).setSet(false);
-                            selectedItems.remove(homeRulesList.get(index).getId());
+                            onSelectedItems.remove(homeRulesList.get(index).getId());
+                            offSelectedItems.add(homeRulesList.get(index).getId());
                         }
                     }
                 })
@@ -282,10 +286,13 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Data - home rules
-                        if (selectedItems.isEmpty()) {
-                            selectedItems.add(-1);
+                        if (onSelectedItems.isEmpty()) {
+                            onSelectedItems.add(-1);
                         }
-                        apiService.setHomeRules(new ArrayList<Integer>(selectedItems)).enqueue(new Callback<ResponseBody>() {
+                        if (offSelectedItems.isEmpty()) {
+                            offSelectedItems.add(-1);
+                        }
+                        apiService.setHomeRules(new ArrayList<Integer>(onSelectedItems), new ArrayList<Integer>(offSelectedItems)).enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 if (response.isSuccessful()) {

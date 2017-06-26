@@ -137,5 +137,6 @@ public interface APIService {
 
     @POST("/home/rules/")
     @FormUrlEncoded
-    Call<ResponseBody> setHomeRules(@Field("homeRulesIDs") List<Integer> homeRules);
+    Call<ResponseBody> setHomeRules(@Field("onHomeRulesIDs") List<Integer> onHomeRules,
+                                    @Field("offHomeRulesIDs") List<Integer> offHomeRules);
 }

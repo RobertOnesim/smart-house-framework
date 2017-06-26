@@ -6,8 +6,8 @@ package com.ronesim.smarthouse.remote;
 
 public class APIUtils {
 
-    public static final String BASE_URL = "http://192.168.100.5:8000/";
-
+    // public static final String BASE_URL = "http://192.168.100.5:8000/";
+    public static final String BASE_URL = "http://172.20.10.5:8000/";
     private APIUtils(String token) {
     }
 
